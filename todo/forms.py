@@ -13,9 +13,13 @@ class BoardForm(forms.ModelForm):
         fields = ['name']
 
 
-class TaskForm(forms.Form):
-    task = forms.CharField(max_length=256, required=True, label='', widget=forms.TextInput(
+class TaskForm(forms.ModelForm):
+    description = forms.CharField(max_length=256, required=True, label='', widget=forms.TextInput(
         attrs={'placeholder': 'Task Description'}))
+
+    class Meta:
+        model = models.Task
+        fields = ['description']
 
 
 class LoginForm(forms.Form):

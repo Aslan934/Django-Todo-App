@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, logout,  login as auth_login
+from django.contrib.auth import authenticate, logout, login
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -9,7 +9,7 @@ from todo import models
 from todo import forms
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginUser')
 def index(request):
     board_data = models.Board.objects.filter(owner=request.user)
     task_data = models.Task.objects.filter(board__owner=request.user)
@@ -27,7 +27,7 @@ def index(request):
 
         elif 'create_task' in request.POST:
             if task_form.is_valid():
-                task_description = task_form.cleaned_data.get('task')
+                task_description = task_form.cleaned_data.get('description')
                 board = models.Board.objects.get(
                     id=request.POST.get('create_task'))
                 task_data = models.Task.objects.create(
@@ -59,6 +59,7 @@ def index(request):
         'board_form': board_form,
         'task_form': task_form
     }
+
     return render(request, 'index.html', context)
 
 
@@ -71,22 +72,32 @@ def update_board(request, id):
     return render(request, 'update_board.html', {'board_form': board_form})
 
 
-def login(request):
+def update_task(request, id):
+    instance = get_object_or_404(models.Task, id=id)
+    task_form = forms.TaskForm(request.POST or None, instance=instance)
+
+    if task_form.is_valid():
+        task_form.save()
+        return redirect('index')
+    return render(request, 'update_task.html', {'task_form': task_form})
+
+
+def loginUser(request):
     form = forms.LoginForm(request.POST or None)
 
     context = {
-        'form': form
+        "form": form
     }
-
     if form.is_valid():
-        username = form.cleaned_data.get('username')
+        username = form.cleaned_data.get("username")
         password = form.cleaned_data.get("password")
         user = authenticate(username=username, password=password)
         if user is None:
+            messages.error(request, 'Username or Password is incorrect!')
             return render(request, 'login.html', context)
-        auth_login(request, user)
-        redirect('index')
 
+        login(request, user)
+        return redirect('index')
     return render(request, 'login.html', context)
 
 
@@ -100,7 +111,7 @@ def register(request):
         newUser.set_password(password)
 
         newUser.save()
-        auth_login(request, newUser)
+        login(request, newUser)
 
         return redirect('index')
 
