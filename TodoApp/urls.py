@@ -20,6 +20,9 @@ from todo import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.index, name='index'),
+    path('edit/<int:id>', views.update_board, name='update_board'),
     path('login/', views.login, name='login'),
-    path('register/', views.register, name='register')
+    path('register/', views.register, name='register'),
+    path('logout/', views.logoutUser, name='logout')
 ]

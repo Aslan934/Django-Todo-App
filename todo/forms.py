@@ -4,6 +4,20 @@ from django.contrib.auth.models import User
 from . import models
 
 
+class BoardForm(forms.ModelForm):
+    name = forms.CharField(max_length=250, required=True, label='', widget=forms.TextInput(
+        attrs={'placeholder': 'Board Name'}))
+
+    class Meta:
+        model = models.Board
+        fields = ['name']
+
+
+class TaskForm(forms.Form):
+    task = forms.CharField(max_length=256, required=True, label='', widget=forms.TextInput(
+        attrs={'placeholder': 'Task Description'}))
+
+
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username")
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
