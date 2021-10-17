@@ -63,6 +63,7 @@ def index(request):
     return render(request, 'index.html', context)
 
 
+@login_required(login_url='loginUser')
 def update_board(request, id):
     instance = get_object_or_404(models.Board, id=id)
     board_form = forms.BoardForm(request.POST or None, instance=instance)
@@ -72,6 +73,7 @@ def update_board(request, id):
     return render(request, 'update_board.html', {'board_form': board_form})
 
 
+@login_required(login_url='loginUser')
 def update_task(request, id):
     instance = get_object_or_404(models.Task, id=id)
     task_form = forms.TaskForm(request.POST or None, instance=instance)
